@@ -1,7 +1,6 @@
+import 'package:image_to_text/ml_services/text_recognize.dart';
 import 'package:image_to_text/model/image_model.dart';
 import 'package:image_to_text/model/text_model.dart';
-import 'package:image_to_text/repositories/text_recognize.dart';
-
 import 'base_model.dart';
 import 'image_provider.dart';
 
@@ -16,12 +15,8 @@ class TextViewModel extends BaseModel {
 
   set imageProvider(ImageViewModel imageProvider) {
     _imageProvider = imageProvider;
-    // emptyList();
   }
-
-
   void getText() async {
-
     setState(CurrentState.loading);
     try {
       final _mlServices = MlService();

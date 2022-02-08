@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:image_to_text/provider/provider_setup.dart';
+import 'package:image_to_text/provider/image_provider.dart';
+import 'package:image_to_text/provider/text_provider.dart';
 import 'package:image_to_text/view/home_page.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +16,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: providers,
+      providers: [
+        ///List of all providers
+        ChangeNotifierProvider<ImageViewModel>(
+          create: (context) => ImageViewModel(),
+        ),
+        ChangeNotifierProxyProvider<ImageViewModel, TextViewModel>(
+          create: (_) => TextViewModel(),
+          update: (BuildContext context, ImageViewModel? imageProvider,
+              TextViewModel? textProvider) {
+            textProvider!.imageProvider = imageProvider!;
+            return textProvider;
+          },
+          lazy: true,
+        ),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',

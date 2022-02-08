@@ -1,5 +1,6 @@
+import 'package:image_to_text/ml_services/media_services.dart';
 import 'package:image_to_text/model/image_model.dart';
-import 'package:image_to_text/repositories/media_services.dart';
+
 
 
 import 'base_model.dart';
@@ -12,6 +13,7 @@ class ImageViewModel extends BaseModel {
     print("clear");
     _image ==null;
     setState(CurrentState.idle);
+    _image =null;
     notifyListeners();
   }
 
