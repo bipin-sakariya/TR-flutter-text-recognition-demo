@@ -10,8 +10,6 @@ class ImageViewModel extends BaseModel {
   get image => _image;
 
   void clearImage() {
-    print("clear");
-    _image ==null;
     setState(CurrentState.idle);
     _image =null;
     notifyListeners();

@@ -39,12 +39,21 @@ class HomePage extends StatelessWidget {
                     height: 15.0,
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       CustomButton(
                           text: 'Click another picture',
                           onTap: imageProvider.getImage),
-                      const SizedBox(width: 10,),
+                      Consumer2<TextViewModel, ImageViewModel>(
+                        builder: (_, textProvider, imageProvider, __) => ElevatedButton(
+                          onPressed: (imageProvider.image == null)
+                              ? null
+                              : () {
+                            textProvider.getText();
+                          },
+                          child: const Text('Convert'),
+                        ),
+                      ),
                       Consumer<TextViewModel>( builder: (_, textProvider, __) {
                         return  CustomButton(
                             text: 'Clear',
@@ -54,7 +63,7 @@ class HomePage extends StatelessWidget {
                             });
                       }
 
-                      )
+                      ),
                     ],
                   ),
                 ],
@@ -65,16 +74,6 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(
               height: 5.0,
-            ),
-            Consumer2<TextViewModel, ImageViewModel>(
-              builder: (_, textProvider, imageProvider, __) => ElevatedButton(
-                onPressed: (imageProvider.image == null)
-                    ? null
-                    : () {
-                  textProvider.getText();
-                },
-                child: const Text('Convert'),
-              ),
             ),
             const SizedBox(height: 15,),
             Consumer<TextViewModel>(
