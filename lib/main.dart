@@ -1,12 +1,19 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:image_to_text/provider/image_provider.dart';
 import 'package:image_to_text/provider/text_provider.dart';
 import 'package:image_to_text/view/home_page.dart';
 import 'package:provider/provider.dart';
 
-
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
+List<CameraDescription> cameras = [];
+void main() async{
+  // Fetch the available cameras before initializing the app.
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    cameras = await availableCameras();
+  } on CameraException catch (e) {
+    debugPrint('CameraError: ${e.description}');
+  }
   runApp(const MyApp());
 }
 

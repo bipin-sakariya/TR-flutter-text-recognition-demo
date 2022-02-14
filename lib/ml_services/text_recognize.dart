@@ -12,10 +12,13 @@ class MlService {
     List<RecognizedText> recognizedList = [];
 
     for (TextBlock block in recognisedText.blocks) {
-      recognizedList.add(
-          RecognizedText(lines: block.lines, block: block.text.toLowerCase()));
+      for (var textLine in block.lines) {
+        for (var words in textLine.elements) {
+          recognizedList.add(
+              RecognizedText(/*lines: block.lines,*/
+                  block: words.text.toLowerCase()));
+        }
+      }
     }
-
     return recognizedList;
-  }
-}
+}}
