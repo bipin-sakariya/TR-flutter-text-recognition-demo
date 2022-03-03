@@ -3,7 +3,6 @@ import 'package:google_ml_vision/google_ml_vision.dart';
 import 'package:flutter/material.dart';
 import 'package:image_to_text/view/scanner_util.dart';
 
-import '../main.dart';
 import 'detector.dart';
 
 
@@ -64,11 +63,13 @@ try{
      ScannerUtilsWidget.detect(
         image: image,
         detectInImage:(visionImage){
+          print(visionImage);
           return _recognizer.processImage(visionImage);
         },
         imageRotation: description.sensorOrientation,
       ).then(
             (dynamic results) {
+              print("------------");
               print(results.runtimeType);
 
           setState(() {

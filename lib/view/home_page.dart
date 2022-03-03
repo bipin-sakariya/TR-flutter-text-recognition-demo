@@ -98,14 +98,14 @@ class HomePage extends StatelessWidget {
                               : Center(child: DisplayResult(textProvider)),
             ),
             filterData(context),
-            CustomButton(
-                text: 'Scan',
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CameraPreviewScanner()));
-                }),
+            // CustomButton(
+            //     text: 'Scan',
+            //     onTap: () {
+            //       Navigator.push(
+            //           context,
+            //           MaterialPageRoute(
+            //               builder: (context) => const CameraPreviewScanner()));
+            //     }),
             CustomButton(
                 text: 'Camera',
                 onTap: () {

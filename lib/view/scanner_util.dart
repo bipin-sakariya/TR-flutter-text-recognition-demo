@@ -25,7 +25,7 @@ class ScannerUtilsWidget {
     try{
       return await detectInImage(
        GoogleVisionImage.fromBytes(
-        _concatenatePlanes(image.planes),
+          _concatenatePlanes(image.planes),
           _buildMetaData(image, _rotationIntToImageRotation(imageRotation)),
         ),
       );
