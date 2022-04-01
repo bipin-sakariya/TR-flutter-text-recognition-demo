@@ -40,7 +40,7 @@ dependencies:
   provider: ^6.0.0
   intl: ^0.17.0
   google_ml_vision: ^0.0.7
-  camera: ^0.9.4+11
+  camera: ^0.9.4+18
 
 
 dev_dependencies:

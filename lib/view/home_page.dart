@@ -1,11 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_to_text/camera_screen/camera_screen.dart';
 import 'package:image_to_text/provider/base_model.dart';
 import 'package:image_to_text/provider/image_provider.dart';
 import 'package:image_to_text/provider/text_provider.dart';
-import 'package:image_to_text/view/preview_file.dart';
 import 'package:provider/provider.dart';
 
 import 'custom_widget/display_image.dart';
@@ -109,10 +106,8 @@ class HomePage extends StatelessWidget {
             CustomButton(
                 text: 'Camera',
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>  CameraScreen()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => CameraScreen()));
                 }),
           ],
         ),
@@ -125,7 +120,7 @@ class HomePage extends StatelessWidget {
     if (Provider.of<ImageViewModel>(context).image != null &&
         Provider.of<TextViewModel>(context).state == CurrentState.loaded) {
       Provider.of<TextViewModel>(context).processedTexts?.forEach((element) {
-        if (RegExp(r'^[a-z A-Z,]').hasMatch(element.block!)) {
+        if (RegExp(r'^[0-9]').hasMatch(element.block!)) {
           print(element.block);
           filter.add(element.block!);
         }
@@ -137,7 +132,7 @@ class HomePage extends StatelessWidget {
         ? Column(
             children: [
               const Text(
-                "Filtered Text From Picture",
+                "Detected numbers from image",
                 style: TextStyle(
                     decoration: TextDecoration.underline, fontSize: 16),
               ),
