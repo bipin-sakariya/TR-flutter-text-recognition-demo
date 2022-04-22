@@ -7,7 +7,7 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 class DetailScreen extends StatefulWidget {
   final String imagePath;
 
-    DetailScreen({required this.imagePath});
+  DetailScreen({required this.imagePath});
 
   @override
   _DetailScreenState createState() => _DetailScreenState();
@@ -50,23 +50,21 @@ class _DetailScreenState extends State<DetailScreen> {
     // Retrieving the RecognisedText from the InputImage
     final text = await _textDetector.processImage(inputImage);
 
-    // Pattern of RegExp for matching a general email address
-    // String pattern =
-    //     r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$";
-    // RegExp regEx = RegExp(pattern);
-
     List<String> detectedText = [];
 
     // Finding and storing the text String(s) and the TextElement(s)
     for (TextBlock block in text.blocks) {
       for (TextLine line in block.lines) {
-
-       // if (regEx.hasMatch(line.text)) {
-        detectedText.add(line.text);
+        // Pattern of RegExp for matching a general email address
+        String pattern =
+            r'^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]|(?:Jan|Mar|May|Jul|Aug|Oct|Dec)))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2]|(?:Jan|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)(?:0?2|(?:Feb))\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.|\s)(?:(?:0?[1-9]|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep))|(?:1[0-2]|(?:Oct|Nov|Dec)))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$';
+        RegExp regEx = RegExp(pattern);
+        if (regEx.hasMatch(line.text)) {
+          detectedText.add(line.text);
           for (TextElement element in line.elements) {
             _elements.add(element);
           }
-       // }
+        }
       }
     }
 
@@ -99,24 +97,24 @@ class _DetailScreenState extends State<DetailScreen> {
       ),
       body: _imageSize != null
           ? Stack(
-        children: [
-          Container(
-            width: double.maxFinite,
-            color: Colors.black,
-            child: CustomPaint(
-              foregroundPainter: TextDetectorPainter(
-                _imageSize!,
-                _elements,
-              ),
-              child: AspectRatio(
-                aspectRatio: _imageSize!.aspectRatio,
-                child: Image.file(
-                  File(_imagePath),
+              children: [
+                Container(
+                  width: double.maxFinite,
+                  color: Colors.black,
+                  child: CustomPaint(
+                    foregroundPainter: TextDetectorPainter(
+                      _imageSize!,
+                      _elements,
+                    ),
+                    child: AspectRatio(
+                      aspectRatio: _imageSize!.aspectRatio,
+                      child: Image.file(
+                        File(_imagePath),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
-       /*   Align(
+                /*   Align(
             alignment: Alignment.bottomCenter,
             child: Card(
               elevation: 8,
@@ -156,14 +154,14 @@ class _DetailScreenState extends State<DetailScreen> {
               ),
             ),
           ),*/
-        ],
-      )
+              ],
+            )
           : Container(
-        color: Colors.black,
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
+              color: Colors.black,
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
     );
   }
 }
