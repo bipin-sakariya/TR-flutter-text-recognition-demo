@@ -53,7 +53,7 @@ class _DetailScreenState extends State<DetailScreen> {
     List<String> detectedText = [];
 
     // Finding and storing the text String(s) and the TextElement(s)
-    for (TextBlock block in text.blocks) {
+    /*for (TextBlock block in text.blocks) {
       for (TextLine line in block.lines) {
         // Pattern of RegExp for matching a general email address
         String pattern =
@@ -65,6 +65,17 @@ class _DetailScreenState extends State<DetailScreen> {
             _elements.add(element);
           }
         }
+      }
+    }*/
+
+    for (TextBlock block in text.blocks) {
+      for (TextLine line in block.lines) {
+        // if (regEx.hasMatch(line.text)) {
+        detectedText.add(line.text);
+        for (TextElement element in line.elements) {
+          _elements.add(element);
+        }
+        // }
       }
     }
 

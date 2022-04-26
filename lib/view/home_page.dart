@@ -1,8 +1,13 @@
+import 'dart:ffi';
+import 'dart:io';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:image_to_text/camera_screen/camera_screen.dart';
 import 'package:image_to_text/provider/base_model.dart';
 import 'package:image_to_text/provider/image_provider.dart';
 import 'package:image_to_text/provider/text_provider.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'custom_widget/display_image.dart';
@@ -86,14 +91,6 @@ class HomePage extends StatelessWidget {
                           : Center(child: DisplayResult(textProvider)),
             ),
             filterData(context),
-            // CustomButton(
-            //     text: 'Scan',
-            //     onTap: () {
-            //       Navigator.push(
-            //           context,
-            //           MaterialPageRoute(
-            //               builder: (context) => const CameraPreviewScanner()));
-            //     }),
             CustomButton(
                 text: 'Camera',
                 onTap: () {
@@ -108,15 +105,10 @@ class HomePage extends StatelessWidget {
   Widget filterData(BuildContext context) {
     List<String> filter = [];
     List<String> filterDate = [];
-    // filterDate.clear();
+    List<DateTime> convertedList = [];
+    DateTime? dueDate;
     if (Provider.of<ImageViewModel>(context).image != null && Provider.of<TextViewModel>(context).state == CurrentState.loaded) {
       Provider.of<TextViewModel>(context).processedTexts?.forEach((element) {
-        /* RegExp exp = RegExp('\\d{2}/\\d{2}/\\d{4}');
-        // String str = "test string 01/06/1986 with a date inside";
-        String? match = exp.firstMatch(element.block!)?.group(0);
-        print("===MATCHED>${match}");*/
-
-        // var name = element.block!.split(": ");
         if (element.block!.contains(":")) {
           var name = element.block!.split(":");
           if (RegExp(
@@ -128,67 +120,58 @@ class HomePage extends StatelessWidget {
           if (RegExp(
                   r'^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]|(?:Jan|Mar|May|Jul|Aug|Oct|Dec)))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2]|(?:Jan|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)(?:0?2|(?:Feb))\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.|\s)(?:(?:0?[1-9]|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep))|(?:1[0-2]|(?:Oct|Nov|Dec)))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$')
               .hasMatch(element.block!)) {
-            print("===>${element.block!}");
             filterDate.add(element.block!);
-            print("===>Found");
           } else {
             print("===>Not Found");
           }
         }
-        /* if (name.isNotEmpty) {
-          if (RegExp(
-                  r'^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]|(?:Jan|Mar|May|Jul|Aug|Oct|Dec)))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2]|(?:Jan|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)(?:0?2|(?:Feb))\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.|\s)(?:(?:0?[1-9]|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep))|(?:1[0-2]|(?:Oct|Nov|Dec)))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$')
-              .hasMatch(name[1])) {
-            filterDate.add(name[1]);
-          }
-        }*/
-
-        /*  if (RegExp(r'^[0-9]').hasMatch(element.block!)) {
-          print(element.block);
-          filter.add(element.block!);
-          */ /*if (DateTime.parse("dd/MM/YYYY").toString() != DateTime.parse(element.block!).toString()) {
-            print("===>${element.block!}");
-          }*/ /*
-        }*/
       });
     } else {
       filter.clear();
     }
-
-    //fliter with month name
-    /*filter.forEach((element) {
-      if (RegExp(
-      r'^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]|(?:Jan|Mar|May|Jul|Aug|Oct|Dec)))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2]|(?:Jan|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)(?:0?2|(?:Feb))\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.|\s)(?:(?:0?[1-9]|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep))|(?:1[0-2]|(?:Oct|Nov|Dec)))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$')
-          .hasMatch(element)) {
-        print("===>${element}");
-        filterDate.add(element);
-        print("===>Found");
+    try {
+      filterDate.forEach((element) {
+        if (element.contains("Jan") ||
+            element.contains("Feb") ||
+            element.contains("Mar") ||
+            element.contains("Apr") ||
+            element.contains("May") ||
+            element.contains("Jun") ||
+            element.contains("Jul") ||
+            element.contains("Aug") ||
+            element.contains("Sep") ||
+            element.contains("Oct") ||
+            element.contains("Nov") ||
+            element.contains("Dec")) {
+          DateTime pdate1 = DateFormat("d MMM y").parse(element);
+          convertedList.add(pdate1);
+        } else {
+          DateTime pdate = DateFormat("d/M/y").parse(element);
+          convertedList.add(pdate);
+        }
+      });
+      if (convertedList.isNotEmpty) {
+        if (convertedList[0].isBefore(convertedList[1])) {
+          dueDate = convertedList[1];
+        } else {
+          dueDate = convertedList[0];
+        }
       } else {
-        print("===>Not Found");
+        print("====>Converted List is empty");
       }
-    });*/
+    } catch (e) {
+      print("===>${e.toString()}");
+    }
     return filterDate.isNotEmpty
         ? Column(
             children: [
-              /*const Text(
-                "Detected numbers from image",
-                style: TextStyle(decoration: TextDecoration.underline, fontSize: 16),
-              ),
-              ListView.builder(
-                itemCount: filter.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (_, index) {
-                  return SelectableText(filter[index]);
-                },
-              ),*/
               filterDate.isNotEmpty
                   ? const Text(
                       "Detected Dates from image",
                       style: TextStyle(decoration: TextDecoration.underline, fontSize: 16),
                     )
                   : Container(
-                      child: Text("Detected Dates Not Found"),
+                      child: const Text("Detected Dates Not Found"),
                     ),
               filterDate.isNotEmpty
                   ? ListView.builder(
@@ -200,8 +183,9 @@ class HomePage extends StatelessWidget {
                       },
                     )
                   : Container(
-                      child: Text("Detected Dates Not Found"),
-                    )
+                      child: const Text("Detected Dates Not Found"),
+                    ),
+              Text("Due Date is:- ${DateFormat("d/M/y").format(dueDate!)}")
             ],
           )
         : Container();

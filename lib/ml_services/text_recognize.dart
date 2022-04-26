@@ -11,7 +11,6 @@ class MlService {
 
     for (TextBlock block in recognisedText.blocks) {
       for (var textLine in block.lines) {
-        // print("=======>text ${textLine.text}");
         // for (var words in textLine.elements) {
         recognizedList.add(RecognizedText(
             /*lines: block.lines,*/
