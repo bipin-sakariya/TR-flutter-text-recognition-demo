@@ -6,15 +6,17 @@ class MlService {
     final inputImage = InputImage.fromFilePath(path);
     final textDetector = GoogleMlKit.vision.textDetector();
     final RecognisedText recognisedText = await textDetector.processImage(inputImage);
-
     List<RecognizedText> recognizedList = [];
-
+    print("======>${recognisedText.blocks}");
+    // recognizedList.add(RecognizedText(lines: recognisedText.blocks));
+    int i = 0, j = 0;
     for (TextBlock block in recognisedText.blocks) {
+      i++;
       for (var textLine in block.lines) {
+        j++;
         // for (var words in textLine.elements) {
-        recognizedList.add(RecognizedText(
-            /*lines: block.lines,*/
-            block: textLine.text));
+        recognizedList.add(RecognizedText(lines: recognisedText.blocks, block: textLine.text));
+
         // }
       }
     }

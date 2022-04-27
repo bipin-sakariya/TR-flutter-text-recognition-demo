@@ -1,5 +1,3 @@
-import 'dart:ffi';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -106,9 +104,18 @@ class HomePage extends StatelessWidget {
     List<String> filter = [];
     List<String> filterDate = [];
     List<DateTime> convertedList = [];
+    List<double> totalList = [];
     DateTime? dueDate;
+    String? invoiceNumber;
+    double? total;
+    String? companyName;
+    List<String> companyNameList = ["Landscaping Brisbane", "FLOORS and TILING", "Niges Frameworking", "Roofing Extras Pty Ltd"];
     if (Provider.of<ImageViewModel>(context).image != null && Provider.of<TextViewModel>(context).state == CurrentState.loaded) {
-      Provider.of<TextViewModel>(context).processedTexts?.forEach((element) {
+      /* Provider.of<TextViewModel>(context).processedTexts?.forEach((element) {
+      });
+*/
+      Provider.of<TextViewModel>(context).processedTexts?.asMap().forEach((index, element) {
+        //for due date regex
         if (element.block!.contains(":")) {
           var name = element.block!.split(":");
           if (RegExp(
@@ -124,6 +131,44 @@ class HomePage extends StatelessWidget {
           } else {
             print("===>Not Found");
           }
+        }
+
+        //for invoice number regex
+        if (RegExp(r'^(\bInv|INV\b)(.*?)$').hasMatch(element.block!)) {
+          String? name = Provider.of<TextViewModel>(context).processedTexts?.elementAt(index + 1).block!;
+          if (RegExp(r'^\d{4}$').hasMatch(name!)) {
+            // ^(.*)\d{4}(.*?)$
+            invoiceNumber = name;
+          } else {
+            invoiceNumber = Provider.of<TextViewModel>(context).processedTexts?.elementAt(index - 1).block;
+          }
+        } else if (element.block!.contains("Tax Invoice #")) {
+          var nameInvoice = element.block!.split("#");
+          if (RegExp(r'^\d{4}$').hasMatch(nameInvoice[1].trim())) {
+            print("===>Tax Invoice Is ---${nameInvoice[1]}");
+            invoiceNumber = nameInvoice[1];
+          } else {
+            print("===>Tax Invoice Is Not Found");
+          }
+          print("===>Inv Not Found");
+        } else if (element.block!.contains("INVOICE #")) {
+          String? name = Provider.of<TextViewModel>(context).processedTexts?.elementAt(index + 4).block!;
+          if (RegExp(r'^\d{4}$').hasMatch(name!)) {
+            // ^(.*)\d{4}(.*?)$
+            invoiceNumber = name;
+          } else {
+            print("===>Tax Invoice Is Not Found");
+          }
+        } else if (RegExp(r'^(.*)[\.][0-9]{2}?$').hasMatch(element.block!)) {
+          if (element.block!.startsWith("\$")) {
+            totalList.add(double.parse(element.block!.replaceAll("\$", "").replaceAll("%", "")));
+          } else {
+            totalList.add(double.parse(element.block!.replaceAll("%", "")));
+          }
+          total = totalList.reduce(max);
+          print("====>MAX ---- ${total}");
+        } else if (companyNameList.contains(element.block!)) {
+          companyName = element.block!;
         }
       });
     } else {
@@ -185,7 +230,11 @@ class HomePage extends StatelessWidget {
                   : Container(
                       child: const Text("Detected Dates Not Found"),
                     ),
-              Text("Due Date is:- ${DateFormat("d/M/y").format(dueDate!)}")
+              SizedBox(height: 20),
+              Text("Company Name is :- $companyName"),
+              Text("Due Date is:- ${DateFormat("d/M/y").format(dueDate!)}"),
+              Text("Invoice Number is :- $invoiceNumber"),
+              Text("Total is  :- ${total!.toStringAsFixed(2)}")
             ],
           )
         : Container();
