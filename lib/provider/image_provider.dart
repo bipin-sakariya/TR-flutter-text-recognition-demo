@@ -1,8 +1,6 @@
 import 'package:image_to_text/ml_services/media_services.dart';
 import 'package:image_to_text/model/image_model.dart';
 
-
-
 import 'base_model.dart';
 
 class ImageViewModel extends BaseModel {
@@ -11,7 +9,7 @@ class ImageViewModel extends BaseModel {
 
   void clearImage() {
     setState(CurrentState.idle);
-    _image =null;
+    _image = null;
     notifyListeners();
   }
 
@@ -24,10 +22,9 @@ class ImageViewModel extends BaseModel {
     try {
       final _mediaService = MediaService();
       _image = await _mediaService.clickImageFromCamera();
-      if (_image!.imagePath !=null){
+      if (_image!.imagePath != null) {
         setState(CurrentState.loaded);
       }
-
     } catch (e) {
       setState(CurrentState.error);
     }

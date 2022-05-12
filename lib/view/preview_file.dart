@@ -1,13 +1,13 @@
+/*
 import 'package:camera/camera.dart';
-import 'package:google_ml_vision/google_ml_vision.dart';
 import 'package:flutter/material.dart';
+import 'package:google_ml_vision/google_ml_vision.dart';
 import 'package:image_to_text/view/scanner_util.dart';
 
 import 'detector.dart';
 
-
 class CameraPreviewScanner extends StatefulWidget {
-  const CameraPreviewScanner({ Key? key}) : super(key: key);
+  const CameraPreviewScanner({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _CameraPreviewScannerState();
@@ -15,11 +15,15 @@ class CameraPreviewScanner extends StatefulWidget {
 
 class _CameraPreviewScannerState extends State<CameraPreviewScanner> {
   dynamic _scanResults;
-    CameraController? _camera;/*=CameraController(
+  CameraController? _camera;
+
+  */
+/*=CameraController(
     cameras[0],
     ResolutionPreset.high,
-  );*/
-   bool _isDetecting = false;
+  );*/ /*
+
+  bool _isDetecting = false;
   CameraLensDirection _direction = CameraLensDirection.back;
 
   final TextRecognizer _recognizer = GoogleVision.instance.textRecognizer();
@@ -27,66 +31,57 @@ class _CameraPreviewScannerState extends State<CameraPreviewScanner> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((callback) async{
-      await  _initializeCamera();
+    WidgetsBinding.instance!.addPostFrameCallback((callback) async {
+      await _initializeCamera();
     });
-
   }
 
   Future<void> _initializeCamera() async {
-    final CameraDescription description =
-    await ScannerUtilsWidget.getCamera(_direction);
-    final CameraController cameraController = CameraController(
-      description,
-      ResolutionPreset.high,
-      enableAudio: false
-    );
+    final CameraDescription description = await ScannerUtilsWidget.getCamera(_direction);
+    final CameraController cameraController = CameraController(description, ResolutionPreset.high, enableAudio: false);
     _camera = cameraController;
 
-   await _camera!.initialize().then((_) {
+    await _camera!.initialize().then((_) {
       if (!mounted) {
         return;
       }
       setState(() {});
     });
 
+    try {
+      await _camera!.startImageStream((image) {
+        if (_isDetecting) return;
 
-try{
-  await _camera!.startImageStream((image){
+        _isDetecting = true;
 
+        ScannerUtilsWidget.detect(
+          image: image,
+          detectInImage: (visionImage) {
+            print(visionImage);
+            return _recognizer.processImage(visionImage);
+          },
+          imageRotation: description.sensorOrientation,
+        ).then(
+          (dynamic results) {
+            print("------------");
+            print(results.runtimeType);
 
-     if (_isDetecting) return;
+            setState(() {
+              _scanResults = results;
+            });
+          },
+        ).whenComplete(() => Future.delayed(
+            const Duration(
+              milliseconds: 100,
+            ),
+            () => {_isDetecting = false}));
+      });
+    } catch (e) {
+      print("+==> stream image ${e.toString()}");
+    }
 
-      _isDetecting = true;
-
-
-     ScannerUtilsWidget.detect(
-        image: image,
-        detectInImage:(visionImage){
-          print(visionImage);
-          return _recognizer.processImage(visionImage);
-        },
-        imageRotation: description.sensorOrientation,
-      ).then(
-            (dynamic results) {
-              print("------------");
-              print(results.runtimeType);
-
-          setState(() {
-            _scanResults = results;
-          });
-        },
-      ).whenComplete(() => Future.delayed(
-          const Duration(
-            milliseconds: 100,
-          ),
-              () => {_isDetecting = false}));
-  } );
-}catch(e){
-  print("+==> stream image ${e.toString()}");
-}
-
- /*   final CameraDescription description =
+    */
+/*   final CameraDescription description =
     await ScannerUtils.getCamera(_direction);
 
     _camera = CameraController(
@@ -117,7 +112,8 @@ try{
             milliseconds: 100,
           ),
               () => {_isDetecting = false}));
-    });*/
+    });*/ /*
+
   }
 
   Future<dynamic> Function(GoogleVisionImage visionImage) _getDetectionMethod() {
@@ -127,9 +123,7 @@ try{
   Widget _buildResults() {
     const Text noResultsText = Text('No results!');
 
-    if (_scanResults == null ||
-        _camera == null ||
-        !_camera!.value.isInitialized) {
+    if (_scanResults == null || _camera == null || !_camera!.value.isInitialized) {
       return noResultsText;
     }
 
@@ -140,10 +134,9 @@ try{
       _camera!.value.previewSize!.width,
     );
 
-       // assert(_currentDetector == Detector.text);
-        if (_scanResults is! VisionText) return noResultsText;
-        painter = TextDetectorPainter(imageSize, _scanResults);
-
+    // assert(_currentDetector == Detector.text);
+    if (_scanResults is! VisionText) return noResultsText;
+    painter = TextDetectorPainter(imageSize, _scanResults);
 
     return CustomPaint(
       painter: painter,
@@ -155,21 +148,21 @@ try{
       constraints: const BoxConstraints.expand(),
       child: _camera == null
           ? const Center(
-        child: Text(
-          'Initializing Camera...',
-          style: TextStyle(
-            color: Colors.green,
-            fontSize: 30,
-          ),
-        ),
-      )
+              child: Text(
+                'Initializing Camera...',
+                style: TextStyle(
+                  color: Colors.green,
+                  fontSize: 30,
+                ),
+              ),
+            )
           : Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          CameraPreview(_camera!),
-          _buildResults(),
-        ],
-      ),
+              fit: StackFit.expand,
+              children: <Widget>[
+                CameraPreview(_camera!),
+                _buildResults(),
+              ],
+            ),
     );
   }
 
@@ -199,9 +192,7 @@ try{
       body: _buildImage(),
       floatingActionButton: FloatingActionButton(
         onPressed: _toggleCameraDirection,
-        child: _direction == CameraLensDirection.back
-            ? const Icon(Icons.camera_front)
-            : const Icon(Icons.camera_rear),
+        child: _direction == CameraLensDirection.back ? const Icon(Icons.camera_front) : const Icon(Icons.camera_rear),
       ),
     );
   }
@@ -215,3 +206,4 @@ try{
     super.dispose();
   }
 }
+*/

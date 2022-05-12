@@ -1,7 +1,6 @@
-
-
-import 'package:google_ml_vision/google_ml_vision.dart';
+/*
 import 'package:flutter/material.dart';
+import 'package:google_ml_vision/google_ml_vision.dart';
 
 enum Detector {
   text,
@@ -51,7 +50,7 @@ class TextDetectorPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(TextDetectorPainter oldDelegate) {
-    return oldDelegate.absoluteImageSize != absoluteImageSize ||
-        oldDelegate.visionText != visionText;
+    return oldDelegate.absoluteImageSize != absoluteImageSize || oldDelegate.visionText != visionText;
   }
 }
+*/

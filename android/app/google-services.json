@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "178899937937",
+    "project_id": "fluttertextdetection",
+    "storage_bucket": "fluttertextdetection.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:178899937937:android:165127a335766ff67b2d30",
+        "android_client_info": {
+          "package_name": "com.example.image_to_text"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "178899937937-85cbmqq77utncngnvtpghhholulqofdh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWn1427U05XgzEgmf4XlUzTU6LIJryWOw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "178899937937-85cbmqq77utncngnvtpghhholulqofdh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "178899937937-a9ivnm9i0nf2pgior6pq0ac2a3tftihl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.imageToText"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

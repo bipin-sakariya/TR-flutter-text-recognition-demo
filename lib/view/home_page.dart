@@ -12,9 +12,14 @@ import 'custom_widget/display_image.dart';
 import 'custom_widget/display_text.dart';
 import 'custom_widget/upload_image_button.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,58 +121,84 @@ class HomePage extends StatelessWidget {
 */
       Provider.of<TextViewModel>(context).processedTexts?.asMap().forEach((index, element) {
         //for due date regex
-        if (element.block!.contains(":")) {
-          var name = element.block!.split(":");
-          if (RegExp(
-                  r'^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]|(?:Jan|Mar|May|Jul|Aug|Oct|Dec)))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2]|(?:Jan|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)(?:0?2|(?:Feb))\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.|\s)(?:(?:0?[1-9]|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep))|(?:1[0-2]|(?:Oct|Nov|Dec)))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$')
-              .hasMatch(name[1].trim())) {
-            filterDate.add(name[1].trim());
-          }
-        } else {
-          if (RegExp(
-                  r'^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]|(?:Jan|Mar|May|Jul|Aug|Oct|Dec)))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2]|(?:Jan|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)(?:0?2|(?:Feb))\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.|\s)(?:(?:0?[1-9]|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep))|(?:1[0-2]|(?:Oct|Nov|Dec)))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$')
-              .hasMatch(element.block!)) {
-            filterDate.add(element.block!);
+        try {
+          if (element.block!.contains(":")) {
+            var name = element.block!.split(":");
+            if (RegExp(
+                    r'^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]|(?:Jan|Mar|May|Jul|Aug|Oct|Dec)))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2]|(?:Jan|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)(?:0?2|(?:Feb))\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.|\s)(?:(?:0?[1-9]|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep))|(?:1[0-2]|(?:Oct|Nov|Dec)))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$')
+                .hasMatch(name[1].trim())) {
+              filterDate.add(name[1].trim());
+            }
           } else {
-            print("===>Not Found");
+            if (RegExp(
+                    r'^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]|(?:Jan|Mar|May|Jul|Aug|Oct|Dec)))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2]|(?:Jan|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)(?:0?2|(?:Feb))\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.|\s)(?:(?:0?[1-9]|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep))|(?:1[0-2]|(?:Oct|Nov|Dec)))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$')
+                .hasMatch(element.block!)) {
+              filterDate.add(element.block!);
+            } else {
+              print("===>Not Found");
+            }
           }
+        } catch (e) {
+          print("===>CATCH--${e}");
         }
 
         //for invoice number regex
         if (RegExp(r'^(\bInv|INV\b)(.*?)$').hasMatch(element.block!)) {
-          String? name = Provider.of<TextViewModel>(context).processedTexts?.elementAt(index + 1).block!;
-          if (RegExp(r'^\d{4}$').hasMatch(name!)) {
-            // ^(.*)\d{4}(.*?)$
-            invoiceNumber = name;
-          } else {
-            invoiceNumber = Provider.of<TextViewModel>(context).processedTexts?.elementAt(index - 1).block;
+          try {
+            String? name = Provider.of<TextViewModel>(context).processedTexts?.elementAt(index + 1).block!;
+            if (RegExp(r'^\d{4}$').hasMatch(name!)) {
+              // ^(.*)\d{4}(.*?)$
+              invoiceNumber = name;
+            } else {
+              invoiceNumber = Provider.of<TextViewModel>(context).processedTexts?.elementAt(index - 1).block;
+            }
+          } catch (e) {
+            print("===>CATCH--${e}");
           }
         } else if (element.block!.contains("Tax Invoice #")) {
-          var nameInvoice = element.block!.split("#");
-          if (RegExp(r'^\d{4}$').hasMatch(nameInvoice[1].trim())) {
-            print("===>Tax Invoice Is ---${nameInvoice[1]}");
-            invoiceNumber = nameInvoice[1];
-          } else {
-            print("===>Tax Invoice Is Not Found");
+          try {
+            var nameInvoice = element.block!.split("#");
+            if (RegExp(r'^\d{4}$').hasMatch(nameInvoice[1].trim())) {
+              print("===>Tax Invoice Is ---${nameInvoice[1]}");
+              invoiceNumber = nameInvoice[1];
+            } else {
+              print("===>Tax Invoice Is Not Found");
+              invoiceNumber = "Tax Invoice Is Not Found Please ReTake!";
+            }
+            print("===>Inv Not Found");
+          } catch (e) {
+            print("===>CATCH--${e}");
           }
-          print("===>Inv Not Found");
         } else if (element.block!.contains("INVOICE #")) {
-          String? name = Provider.of<TextViewModel>(context).processedTexts?.elementAt(index + 4).block!;
-          if (RegExp(r'^\d{4}$').hasMatch(name!)) {
-            // ^(.*)\d{4}(.*?)$
-            invoiceNumber = name;
-          } else {
-            print("===>Tax Invoice Is Not Found");
+          try {
+            String? name = Provider.of<TextViewModel>(context).processedTexts?.elementAt(index + 4).block!;
+            if (RegExp(r'^\d{4}$').hasMatch(name!)) {
+              // ^(.*)\d{4}(.*?)$
+              invoiceNumber = name;
+            } else {
+              print("===>Tax Invoice Is Not Found");
+              invoiceNumber = "Tax Invoice Is Not Found Please ReTake!";
+            }
+          } catch (e) {
+            print("===>CATCH--${e}");
           }
         } else if (RegExp(r'^(.*)[\.][0-9]{2}?$').hasMatch(element.block!)) {
-          if (element.block!.startsWith("\$")) {
-            totalList.add(double.parse(element.block!.replaceAll("\$", "").replaceAll("%", "")));
-          } else {
-            totalList.add(double.parse(element.block!.replaceAll("%", "")));
+          try {
+            if (element.block!.startsWith("\$")) {
+              totalList.add(double.parse(element.block!.replaceAll("\$", "").replaceAll("%", "")));
+            } else {
+              totalList.add(double.parse(element.block!.replaceAll("%", "")));
+            }
+            total = totalList.reduce(max);
+            totalList.reduce(max);
+            totalList.remove(total);
+            print("====>MAX ---- ${total}");
+          } catch (e) {
+            print("===>CATCH--${e}");
           }
-          total = totalList.reduce(max);
-          print("====>MAX ---- ${total}");
-        } else if (companyNameList.contains(element.block!)) {
+        }
+        //For company name
+        else if (companyNameList.contains(element.block!)) {
           companyName = element.block!;
         }
       });
@@ -195,7 +226,7 @@ class HomePage extends StatelessWidget {
           convertedList.add(pdate);
         }
       });
-      if (convertedList.isNotEmpty) {
+      if (convertedList.length == 2) {
         if (convertedList[0].isBefore(convertedList[1])) {
           dueDate = convertedList[1];
         } else {
@@ -230,11 +261,11 @@ class HomePage extends StatelessWidget {
                   : Container(
                       child: const Text("Detected Dates Not Found"),
                     ),
-              SizedBox(height: 20),
-              Text("Company Name is :- $companyName"),
-              Text("Due Date is:- ${DateFormat("d/M/y").format(dueDate!)}"),
-              Text("Invoice Number is :- $invoiceNumber"),
-              Text("Total is  :- ${total!.toStringAsFixed(2)}")
+              const SizedBox(height: 20),
+              companyName != null ? Text("Company Name is :- $companyName") : const Text("Company Name is Not Found"),
+              dueDate != null ? Text("Due Date is:- ${DateFormat("d/M/y").format(dueDate)}") : const Text("Due Date is Not Found"),
+              invoiceNumber != null ? Text("Invoice Number is :- $invoiceNumber") : const Text("Invoice Number is Not Found"),
+              total != null ? Text("Total is  :- ${total!.toStringAsFixed(2)}") : const Text("Total is Not Found")
             ],
           )
         : Container();
